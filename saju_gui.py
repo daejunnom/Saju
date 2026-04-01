@@ -113,8 +113,6 @@ class SajuGUIApp:
                 timezone_str = tz
                 self.log_msg(f"위치 확인됨: {timezone_str} (경도: {longitude:.2f})\n")
 
-            saju_core.genai.configure(api_key=api_key)
-
             user_data = {
                 "year": year, "month": month, "day": day,
                 "hour": hour, "minute": minute, "gender": gender,
@@ -147,7 +145,7 @@ class SajuGUIApp:
 
             self.log_msg("AI 마스터가 운세 풀이를 작성하는 중입니다... (약 10~20초 소요)")
             fortune_reading = saju_core.get_gemini_saju_reading(
-                pillars, analysis_result, user_data, daeun_info, seun_pillar_info
+                pillars, analysis_result, user_data, daeun_info, seun_pillar_info, api_key
             )
 
             self.log_msg("\n================= [분석 완료] =================")

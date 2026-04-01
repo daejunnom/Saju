@@ -166,8 +166,8 @@ def get_accurate_saju(year, month, day, hour=None, minute=None, timezone_str="As
             year=year, month=month, day=day, hour=calc_hour, minute=calc_minute,
             longitude=longitude, use_solar_time=True, utc_offset=utc_offset
         )
-    except Exception:
-        return {"error": "명식 계산 실패"}
+    except Exception as e:
+        return {"error": f"명식 계산 실패: {str(e)}"}
         
     if not isinstance(saju_data, dict):
         return {"error": "명식 반환 타입 오류"}
@@ -618,10 +618,28 @@ class SajuAnalyzer:
         self.result["오행가중치분포"] = self.weights.copy()
         return self.result
 
-def get_gemini_saju_reading(pillars, analysis_result, user_data, daeun_info, seun_pillar_info):
+def get_gemini_saju_reading(pillars, analysis_result, user_data, daeun_info, seun_pillar_info, api_key): # api_key 추가됨
     try:
+        genai.configure(api_key=api_key)
+
+        available_models = [
+            m.name for m in genai.list_models()
+            if 'generateContent' in m.supported_generation_methods
+        ]
+
+        target_model = "gemini-1.5-flash"
+        
+        if "models/gemini-1.5-flash" in available_models:
+            target_model = "gemini-1.5-flash"
+        elif "models/gemini-1.5-pro" in available_models:
+            target_model = "gemini-1.5-pro"
+        elif "models/gemini-pro" in available_models:
+            target_model = "gemini-pro"
+        elif available_models:
+            target_model = available_models[0].split('/')[-1]
+
         model = genai.GenerativeModel(
-            model_name="gemini-1.5-flash",
+            model_name=target_model,
             system_instruction=SYSTEM_PROMPT,
             generation_config={"temperature": 0.7}
         )
@@ -652,5 +670,5 @@ def get_gemini_saju_reading(pillars, analysis_result, user_data, daeun_info, seu
         response = model.generate_content(user_prompt)
         text = getattr(response, "text", "")
         return text if isinstance(text, str) and text.strip() else "빈 응답 반환"
-    except Exception:
-        return "통신 오류 또는 텍스트 추출 실패"
+    except Exception as e:
+        return f"통신 오류 또는 텍스트 추출 실패: {str(e)}"

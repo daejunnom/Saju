@@ -45,6 +45,6 @@ An advanced desktop application that calculates traditional Korean Saju (Four Pi
 - **AI Model**: Google Gemini 1.5 Flash
 - **GUI**: Tkinter
 
-## ⚠️ Important Notes
+## Important Notes
 - An active internet connection is required.
 - Your API Key is processed locally and is never stored or transmitted externally by this application.

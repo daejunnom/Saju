@@ -1,0 +1,6 @@
+build/
+dist/
+vnev/
+*.spec
+__pycache__/
+.env
